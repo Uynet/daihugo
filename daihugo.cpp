@@ -38,6 +38,7 @@ class Matrix{
  enum State{
     ADVANCE  = 0,
     RECESSION = 1,
+    END = 2,
   };
 
 
@@ -55,6 +56,7 @@ class Matrix{
     for(int i = 0;i<cn;i++){
       for(int j = 0;j<rn;j++){
         m[i][j] = (rn * i + j + 1)%11;
+        if(m[i][j] == 0) m[i][j]++;
       }
      }
   }
@@ -66,50 +68,93 @@ int main(){
 
   int cur = 0;
   int quot;
-  //前進消去
-  switch(s){
-    case ADVANCE :
-      if(cur < cn){
-        //(cur,cur)を1にする
-        /*
-        3 6 4 3 6 4   <-  cur 
-        8 9 3 8 9 3
-        1 1 4 5 1 4
-        ---------------------  cur *= 4 *= 11
-        1 2 5 1 2 5   <-  cur
-        8 9 3 8 9 3
-        1 1 4 5 1 4
-        */
-        if(m[cur][cur] != 1){
-          for(int i=1;i<11;i++){
-            if(m[cur][cur]*i%11 == 1){
-              m[cur][cur]*=i%=11;
-              break; 
+  while(s != END){
+    //前進消去
+    switch(s){
+      case ADVANCE :
+        if(cur < cn){
+          //(cur,cur)を1にする
+          /*
+          3 6 4 3 6 4   <-  cur 
+          8 9 3 8 9 3
+          1 1 4 5 1 4
+          ---------------------  cur *= 4 *= 11
+          1 2 5 1 2 5   <-  cur
+          8 9 3 8 9 3
+          1 1 4 5 1 4
+          */
+          if(m[cur][cur] != 1){
+            for(int i=1;i<11;i++){
+              if(m[cur][cur]*i%11 == 1){
+                m[cur][cur]*=i;
+                m[cur][cur]%=11;
+                break; 
+              }
+            }
+          }    
+
+         
+          // 第cur+1~第cn-1行から第curgyou のquot倍を引く
+           /*
+           
+          1 2 5 1 2 5  <-  cur
+          8 9 3 8 9 3
+          1 1 4 5 1 4
+          ---------------------
+          1 2 5 1 2 5  <-  cur
+          0 6 . . . .
+          0 10 . . . .
+          */
+          for(int j = 1;j<cn;j++){
+             quot = m[cur+j][cur];
+            for(int i = 0;i<6;i++){
+              m[cur+j][i] = ((m[cur+j][i]-quot * m[cur][i])%11+11)%11;
             }
           }
-        }    
-
-        quot = m[cur+1][cur];
-        // 第cur+1列から第cur列のquot倍を引く
-         /*
-         
-        1 2 5 1 2 5  <-  cur
-        8 9 3 8 9 3
-        1 1 4 5 1 4
-        ---------------------
-        1 2 5 1 2 5  <-  cur
-        0 6 . . . .
-        1 1 4 5 1 4
-        */
-        for(int i = 0;i<rn;i++){
-          m[cur+1][i] -= (quot * m[cur][i]);
+          //currentを次に移動
+          cur++;
+          if(cur == cn-1){
+                if(m[cur][cur] != 1){
+                for(int i=1;i<11;i++){
+                  if(m[cur][cur]*i%11 == 1){
+                    m[cur][cur]*=i;
+                    m[cur][cur]%=11;
+                    break; 
+                  }
+                }
+              }    
+            s = RECESSION;
+          }
+          showmt();
         }
-        cur += 1;
-        showmt();
-      }
-      break;
-    case RECESSION :
-      break;
+        break;
+      case RECESSION :
+         // 第1~第cur-1行から第cur行のquot倍を引く
+           /*
+           
+          1 2 5  
+          0 1 3
+          0 0 1 <-  cur
+          ---------------------
+          1 2 0  
+          0 1 0
+          0 0 1 <-  cur
+          */
+         for(int j = 0;j<cur;j++){
+             quot = m[j][cur];
+            for(int i = 0;i<rn;i++){
+              m[j][i] = ((m[j][i]-quot * m[cur][i])%11+11)%11;
+            }
+          }
+
+          cur--;
+          if(cur == 0){
+             s = END;
+
+          }
+          showmt();
+           break;
+    }
   }
   
 }
