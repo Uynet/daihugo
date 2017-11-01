@@ -19,25 +19,15 @@ typedef vector<int> vi;
 #define MAXE(a) *max_element(ALL(a))
 #define MINE(a) *min_element(ALL(a))
 
-int cn = 5;
-int rn = 6;
+int n = 5;
+int k = 3;
+int t = (n-k)/2;
+int cn = n;
+int rn = n+1;
 int m[100][100];
 int r[5] = {7,4,4,9,2};
 
 
-
-class Matrix{
-  int cn;//行数
-  int rn;//列数(=cn+1)
-  int *m;
-  public :
-  Matrix(int y,int x,int *m){
-    this->cn  = y; 
-    this->rn  = x; 
-    this->m   = m; 
-  }; 
-
-};
 
  enum State{
     ADVANCE  = 0,
@@ -59,11 +49,11 @@ class Matrix{
   void initmt(){
     for(int j = 0;j<cn;j++){
       for(int i = 0;i<rn;i++){
-        if(i<3){
+        if(i<n-t){
           m[j][i] = (int)pow(j,i)%11;
         }
         else{
-          m[j][i] = r[j]*m[j][i%3]%11;
+          m[j][i] = r[j]*m[j][i%(n-t)]%11;
         }
       }
      }
