@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <vector>
 #include <iostream>
+#include <math.h>
 using namespace std;
 
 typedef vector<int> vi;
@@ -21,6 +22,9 @@ typedef vector<int> vi;
 int cn = 5;
 int rn = 6;
 int m[100][100];
+int r[5] = {7,4,4,9,2};
+
+
 
 class Matrix{
   int cn;//行数
@@ -53,10 +57,14 @@ class Matrix{
   }
 
   void initmt(){
-    for(int i = 0;i<cn;i++){
-      for(int j = 0;j<rn;j++){
-        m[i][j] = (rn * i + j + 1)%11;
-        if(m[i][j] == 0) m[i][j]++;
+    for(int j = 0;j<cn;j++){
+      for(int i = 0;i<rn;i++){
+        if(i<3){
+          m[j][i] = (int)pow(j,i)%11;
+        }
+        else{
+          m[j][i] = r[j]*m[j][i%3]%11;
+        }
       }
      }
   }
